@@ -49,6 +49,29 @@ class ProdutoDAO:
             return None
         finally:
             cursor.close()
+
+    def listar(self):
+        cursor = self.conexao.cursor()
+        sql = "SELECT id, nome, descricao, preco, estoque, id_fornecedor FROM produtos ORDER BY id"
+        try:
+            cursor.execute(sql)
+            produtos = []
+            for tupla in cursor.fetchall():
+                produtos.append(
+                    Produto(
+                        id=tupla[0],
+                        nome=tupla[1],
+                        descricao=tupla[2],
+                        preco=tupla[3],
+                        estoque=tupla[4],
+                        id_fornecedor=tupla[5],
+                    )
+                )
+            return produtos
+        except Exception:
+            return []
+        finally:
+            cursor.close()
     
     def baixar_estoque(self, id, quantidade):
         cursor = self.conexao.cursor()
@@ -57,6 +80,18 @@ class ProdutoDAO:
             cursor.execute(sql, (quantidade, id))
             self.conexao.commit()
             return True
+        except Exception:
+            self.conexao.rollback()
+            return False
+        finally:
+            cursor.close()
+
+    def deletar(self, id):
+        cursor = self.conexao.cursor()
+        try:
+            cursor.execute("DELETE FROM produtos WHERE id = %s", (id,))
+            self.conexao.commit()
+            return cursor.rowcount > 0
         except Exception:
             self.conexao.rollback()
             return False

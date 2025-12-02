@@ -62,3 +62,40 @@ class VendaDAO:
             
         finally:
             cursor.close()
+
+    def listar(self):
+        cursor = self.conexao.cursor()
+        sql = "SELECT id, id_cliente, data_venda, valor_total, status FROM vendas ORDER BY id"
+        try:
+            cursor.execute(sql)
+            vendas = []
+            for tupla in cursor.fetchall():
+                vendas.append(
+                    Venda(
+                        id=tupla[0],
+                        data_venda=tupla[2],
+                        valor_total=tupla[3],
+                        id_cliente=tupla[1],
+                        status=tupla[4],
+                    )
+                )
+            return vendas
+        except Exception as e:
+            print(f"Erro ao listar vendas: {e}")
+            return []
+        finally:
+            cursor.close()
+
+    def deletar(self, id):
+        cursor = self.conexao.cursor()
+        try:
+            cursor.execute("DELETE FROM itens_venda WHERE id_venda = %s", (id,))
+            cursor.execute("DELETE FROM vendas WHERE id = %s", (id,))
+            self.conexao.commit()
+            return cursor.rowcount > 0
+        except Exception as e:
+            self.conexao.rollback()
+            print(f"Erro ao excluir venda: {e}")
+            return False
+        finally:
+            cursor.close()
