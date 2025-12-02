@@ -7,9 +7,9 @@ class ClienteDAO:
   def salvar(self,cliente:Cliente):
     cursor = self.conexao.cursor()
 
-    sql= """"
-    INSERT INTO clientes (nome,cpf,email,endereco)
-    VALUES(%s,%s,%s,%s)
+    sql = """
+    INSERT INTO clientes (nome, cpf, email, endereco)
+    VALUES (%s, %s, %s, %s)
     RETURNING id;
     """
     valores = (cliente.nome,cliente.cpf,cliente.email,cliente.endereco)

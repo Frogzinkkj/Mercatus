@@ -1,4 +1,4 @@
-from venda import Venda
+from src.models.venda import Venda
 
 class VendaDAO:
     def __init__(self, conexao):
